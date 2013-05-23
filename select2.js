@@ -2421,6 +2421,9 @@ the specific language governing permissions and limitations under the Apache Lic
                 this.search.removeClass("select2-focused");
                 this.selectChoice(null);
                 if (!this.opened()) this.clearSearch();
+                // C42 edit: we want the searchbox to close when tabbing out of the field
+                // If we do this though, the links inside the dropdown no longer work & the dropdown also closes when clicking on something, perhaps should do it on tab
+                // this.close();
                 e.stopImmediatePropagation();
                 this.opts.element.trigger($.Event("select2-blur"));
             }));
@@ -2449,6 +2452,8 @@ the specific language governing permissions and limitations under the Apache Lic
                 this.container.addClass("select2-container-active");
                 this.dropdown.addClass("select2-drop-active");
                 this.clearPlaceholder();
+                // C42 edit: we want the searchbox to open when tabbing into the field
+                this.open();
             }));
 
             this.initContainerWidth();
