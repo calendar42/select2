@@ -1490,6 +1490,7 @@ the specific language governing permissions and limitations under the Apache Lic
                 results.scrollTop(0);
                 search.removeClass("select2-active");
                 self.positionDropdown();
+                opts.postRenderResults(data, results);
             }
 
             function render(html) {
@@ -1814,7 +1815,9 @@ the specific language governing permissions and limitations under the Apache Lic
                         killEvent(e);
                         return;
                     case KEY.TAB:
-                        this.selectHighlighted({noFocus: true});
+                        if (!this.opts.tabOverrule) {
+                            this.selectHighlighted({noFocus: true});
+                        }
                         return;
                     case KEY.ESC:
                         this.cancel(e);
@@ -2374,8 +2377,14 @@ the specific language governing permissions and limitations under the Apache Lic
                         killEvent(e);
                         return;
                     case KEY.TAB:
-                        this.selectHighlighted({noFocus:true});
-                        return;
+                        if (this.opts.tabOverrule) {
+                            e.preventDefault();
+                            this.opts.tabOverrule(e);
+                            return;
+                        } else {
+                            this.selectHighlighted({noFocus:true});
+                            return;
+                        }
                     case KEY.ESC:
                         this.cancel(e);
                         killEvent(e);
@@ -2390,6 +2399,7 @@ the specific language governing permissions and limitations under the Apache Lic
 
                 if (e.which === KEY.ENTER) {
                     if (this.opts.openOnEnter === false) {
+                        this.opts.onSubmit();
                         return;
                     } else if (e.altKey || e.ctrlKey || e.shiftKey || e.metaKey) {
                         return;
@@ -2901,7 +2911,7 @@ the specific language governing permissions and limitations under the Apache Lic
                 val.push(self.opts.id($(this).data("select2-data")));
             });
             this.setVal(val);
-            this.triggerChange();
+            this.triggerChange(); 
         },
 
         // multi
@@ -2923,6 +2933,12 @@ the specific language governing permissions and limitations under the Apache Lic
                     this.triggerChange(this.buildChangeDetails(old, this.data()));
                 }
             }
+        },
+        selectCurrent: function () {
+            var selected = this.dropdown.find('.select2-highlighted');
+            if (selected.length > 0) {
+                selected.trigger('mouseup');
+            }
         }
     });
 
@@ -2932,7 +2948,7 @@ the specific language governing permissions and limitations under the Apache Lic
             opts,
             select2,
             value, multiple,
-            allowedMethods = ["val", "destroy", "opened", "open", "close", "focus", "isFocused", "container", "onSortStart", "onSortEnd", "enable", "readonly", "positionDropdown", "data"],
+            allowedMethods = ["val", "destroy", "opened", "open", "close", "focus", "isFocused", "container", "onSortStart", "onSortEnd", "enable", "readonly", "positionDropdown", "data", "selectCurrent", "updateResults"],
             valueMethods = ["val", "opened", "isFocused", "container", "data"];
 
         this.each(function () {
@@ -2983,11 +2999,13 @@ the specific language governing permissions and limitations under the Apache Lic
         dropdownCss: {},
         containerCssClass: "",
         dropdownCssClass: "",
+        onSubmit: function () {},
         formatResult: function(result, container, query, escapeMarkup) {
             var markup=[];
             markMatch(result.text, query.term, markup, escapeMarkup);
             return markup.join("");
         },
+        postRenderResults: function (data, container) {},
         formatSelection: function (data, container) {
             return data ? data.text : undefined;
         },
