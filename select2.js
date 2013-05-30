@@ -2463,7 +2463,8 @@ the specific language governing permissions and limitations under the Apache Lic
                 this.dropdown.addClass("select2-drop-active");
                 this.clearPlaceholder();
                 // C42 edit: we want the searchbox to open when tabbing into the field
-                this.open();
+                // But adding this, will mean that if you click on a selection in the textfield, the dropdown will also open
+                // this.open();
             }));
 
             this.initContainerWidth();
