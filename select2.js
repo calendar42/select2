@@ -1358,6 +1358,18 @@ the specific language governing permissions and limitations under the Apache Lic
             var choices = this.findHighlightableChoices(),
                 index = this.highlight();
 
+            // If going to index -1 unselect
+            if (index === 0 && delta === -1) {
+                this.highlight(undefined);
+                return;
+            }
+
+            // If none selected select the first item
+            if (index === -1 && delta === 1) {
+                this.highlight(0);
+                return;
+            }
+
             while (index > -1 && index < choices.length) {
                 index += delta;
                 var choice = $(choices[index]);
@@ -1619,12 +1631,24 @@ the specific language governing permissions and limitations under the Apache Lic
         // abstract
         selectHighlighted: function (options) {
             var index=this.highlight(),
+                value = '',
                 highlighted=this.results.find(".select2-highlighted"),
                 data = highlighted.closest('.select2-result').data("select2-data");
 
             if (data) {
                 this.highlight(index);
                 this.onSelect(data, options);
+            } else {
+                // Nothing selected from the list just use the search value as the input value
+                value = this.search.val();
+                this.close();
+
+                if (!options || !options.noFocus) {
+                    this.selection.focus();
+                }
+                this.updateSelection({ 'location_text': value });
+
+                this.opts.element.trigger({ type: "select2-selected-no-result", val: value });
             }
         },
 
@@ -1780,7 +1804,8 @@ the specific language governing permissions and limitations under the Apache Lic
                 container = this.container,
                 dropdown = this.dropdown;
 
-            this.showSearch(false);
+            // Make sure the search field is always visible
+            this.showSearch(true);
 
             this.selection = selection = container.find(".select2-choice");
 
@@ -1811,8 +1836,8 @@ the specific language governing permissions and limitations under the Apache Lic
                         return;
                     case KEY.ENTER:
                         this.selectHighlighted();
-                        killEvent(e);
-                        return;
+                        killEventImmediately(e);
+                        return false;
                     case KEY.TAB:
                         if (!this.opts.tabOverrule) {
                             this.selectHighlighted({noFocus: true});
@@ -1820,8 +1845,8 @@ the specific language governing permissions and limitations under the Apache Lic
                         return;
                     case KEY.ESC:
                         this.cancel(e);
-                        killEvent(e);
-                        return;
+                        killEventImmediately(e);
+                        return false;
                 }
             }));
 
@@ -2029,7 +2054,7 @@ the specific language governing permissions and limitations under the Apache Lic
 
         // single
         postprocessResults: function (data, initial, noHighlightUpdate) {
-            var selected = 0, self = this, showSearchInput = true;
+            var selected = null, self = this, showSearchInput = true;
 
             // find the selected element in the result list
 
@@ -2041,7 +2066,7 @@ the specific language governing permissions and limitations under the Apache Lic
             });
 
             // and highlight it
-            if (noHighlightUpdate !== false) {
+            if (noHighlightUpdate !== false && selected !== null) {
                 this.highlight(selected);
             }
 
@@ -2089,7 +2114,6 @@ the specific language governing permissions and limitations under the Apache Lic
 
         // single
         updateSelection: function (data) {
-
             var container=this.selection.find("span"), formatted;
 
             this.selection.data("select2-data", data);
