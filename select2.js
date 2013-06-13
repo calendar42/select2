@@ -1638,14 +1638,14 @@ the specific language governing permissions and limitations under the Apache Lic
             if (data) {
                 this.highlight(index);
                 this.onSelect(data, options);
-            } else {
+            } else if (this.opts.allowTextInputAsResult){
                 // Nothing selected from the list just use the search value as the input value
                 value = this.search.val();
                 this.close();
 
-                if (!options || !options.noFocus) {
-                    this.selection.focus();
-                }
+                // if (!options || !options.noFocus) {
+                //     this.selection.focus();
+                // }
                 this.updateSelection({ 'location_text': value });
 
                 this.opts.element.trigger({ type: "select2-selected-no-result", val: value });
@@ -1773,6 +1773,7 @@ the specific language governing permissions and limitations under the Apache Lic
             this.parent.close.apply(this, arguments);
             this.focusser.removeAttr("disabled");
             this.focusser.focus();
+            this.container.removeClass("select2-container-active");
         },
 
         // single
@@ -1850,15 +1851,17 @@ the specific language governing permissions and limitations under the Apache Lic
                 }
             }));
 
-            this.search.on("blur", this.bind(function(e) {
-                // a workaround for chrome to keep the search field focussed when the scroll bar is used to scroll the dropdown.
-                // without this the search field loses focus which is annoying
-                if (document.activeElement === this.body().get(0)) {
-                    window.setTimeout(this.bind(function() {
-                        this.search.focus();
-                    }), 0);
-                }
-            }));
+            // C42 Removed this because it fuckes up the selected state when tabbing out of the field.
+            // And we are not able to scroll the field anyway
+            // this.search.on("blur", this.bind(function(e) {
+            //     // a workaround for chrome to keep the search field focussed when the scroll bar is used to scroll the dropdown.
+            //     // without this the search field loses focus which is annoying
+            //     if (document.activeElement === this.body().get(0)) {
+            //         window.setTimeout(this.bind(function() {
+            //             this.search.focus();
+            //         }), 0);
+            //     }
+            // }));
 
             this.focusser.on("keydown", this.bind(function (e) {
                 if (!this.isInterfaceEnabled()) return;
@@ -1928,6 +1931,10 @@ the specific language governing permissions and limitations under the Apache Lic
             this.focusser.on("focus", this.bind(function(){
                 if (!this.container.hasClass("select2-container-active")) {
                     this.opts.element.trigger($.Event("select2-focus"));
+
+                    var initValue = this.opts.formatSelection(this.data(), this.container);
+                    this.open();
+                    this.search.val(initValue).select();
                 }
                 this.container.addClass("select2-container-active");
             })).on("blur", this.bind(function() {
@@ -2482,6 +2489,7 @@ the specific language governing permissions and limitations under the Apache Lic
                 if (!this.container.hasClass("select2-container-active")) {
                     this.opts.element.trigger($.Event("select2-focus"));
                 }
+
                 this.container.addClass("select2-container-active");
                 this.dropdown.addClass("select2-drop-active");
                 this.clearPlaceholder();
@@ -2695,6 +2703,7 @@ the specific language governing permissions and limitations under the Apache Lic
                   killEvent(e);
               })).on("focus", this.bind(function () {
                   if (!this.isInterfaceEnabled()) return;
+
                   this.container.addClass("select2-container-active");
                   this.dropdown.addClass("select2-drop-active");
               }));
@@ -3023,6 +3032,7 @@ the specific language governing permissions and limitations under the Apache Lic
         dropdownCss: {},
         containerCssClass: "",
         dropdownCssClass: "",
+        allowTextInputAsResult: false,
         onSubmit: function () {},
         formatResult: function(result, container, query, escapeMarkup) {
             var markup=[];
