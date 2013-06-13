@@ -1606,6 +1606,7 @@ the specific language governing permissions and limitations under the Apache Lic
 
         // abstract
         cancel: function () {
+            this.search.val('');
             this.close();
         },
 
@@ -1639,16 +1640,8 @@ the specific language governing permissions and limitations under the Apache Lic
                 this.highlight(index);
                 this.onSelect(data, options);
             } else if (this.opts.allowTextInputAsResult){
-                // Nothing selected from the list just use the search value as the input value
-                value = this.search.val();
+                // Nothing selected from the list call close to make the search input close
                 this.close();
-
-                // if (!options || !options.noFocus) {
-                //     this.selection.focus();
-                // }
-                this.updateSelection({ 'location_text': value });
-
-                this.opts.element.trigger({ type: "select2-selected-no-result", val: value });
             }
         },
 
@@ -1745,6 +1738,7 @@ the specific language governing permissions and limitations under the Apache Lic
         // single
         opening: function () {
             var el, range;
+            var initValue = this.opts.formatSelection(this.data(), this.container);
             this.parent.opening.apply(this, arguments);
             if (this.showSearchInput !== false) {
                 // IE appends focusser.val() at the end of field :/ so we manually insert it at the beginning using a range
@@ -1764,12 +1758,31 @@ the specific language governing permissions and limitations under the Apache Lic
 
             this.focusser.prop("disabled", true).val("");
             this.updateResults(true);
+
+            this.search.val(initValue).select();
+
             this.opts.element.trigger($.Event("select2-open"));
         },
 
         // single
         close: function () {
             if (!this.opened()) return;
+
+            // If nothing selected take the value of the input and add it as the result
+            var index=this.highlight(),
+                value = '',
+                highlighted=this.results.find(".select2-highlighted"),
+                data = highlighted.closest('.select2-result').data("select2-data");
+
+            if (!data && this.opts.allowTextInputAsResult){
+                // Nothing selected from the list just use the search value as the input value
+                value = this.search.val();
+                this.updateSelection({ 'location_text': value });
+
+                this.opts.element.trigger({ type: "select2-selected-no-result", val: value });
+            }
+
+
             this.parent.close.apply(this, arguments);
             this.focusser.removeAttr("disabled");
             this.focusser.focus();
@@ -1932,9 +1945,7 @@ the specific language governing permissions and limitations under the Apache Lic
                 if (!this.container.hasClass("select2-container-active")) {
                     this.opts.element.trigger($.Event("select2-focus"));
 
-                    var initValue = this.opts.formatSelection(this.data(), this.container);
                     this.open();
-                    this.search.val(initValue).select();
                 }
                 this.container.addClass("select2-container-active");
             })).on("blur", this.bind(function() {
