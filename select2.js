@@ -1766,22 +1766,23 @@ the specific language governing permissions and limitations under the Apache Lic
 
         // single
         close: function () {
-            if (!this.opened()) return;
-
             // If nothing selected take the value of the input and add it as the result
             var index=this.highlight(),
-                value = '',
+                value = this.search.val(),
                 highlighted=this.results.find(".select2-highlighted"),
-                data = highlighted.closest('.select2-result').data("select2-data");
+                data = highlighted.closest('.select2-result').data("select2-data"),
+                selected = this.opts.element.val();
 
-            if (!data && this.opts.allowTextInputAsResult){
+            if ( (!data || data.id !== selected) && this.opts.allowTextInputAsResult && value !== ''){
                 // Nothing selected from the list just use the search value as the input value
-                value = this.search.val();
-                this.updateSelection({ 'location_text': value });
+                var selection = {};
+                selection[this.opts.textInputResult] = value;
+                this.updateSelection(selection);
 
                 this.opts.element.trigger({ type: "select2-selected-no-result", val: value });
             }
 
+            if (!this.opened()) return;
 
             this.parent.close.apply(this, arguments);
             this.focusser.removeAttr("disabled");
@@ -3044,6 +3045,7 @@ the specific language governing permissions and limitations under the Apache Lic
         containerCssClass: "",
         dropdownCssClass: "",
         allowTextInputAsResult: false,
+        textInputResult: 'text',
         onSubmit: function () {},
         formatResult: function(result, container, query, escapeMarkup) {
             var markup=[];
