@@ -1129,8 +1129,14 @@ the specific language governing permissions and limitations under the Apache Lic
                 above = true;
                 if (!enoughRoomAbove && enoughRoomBelow) above = false;
             } else {
-                above = false;
-                if (!enoughRoomBelow && enoughRoomAbove) above = true;
+                // Prefere open above
+                if (this.opts.preferOpenAbove) {
+                    above = true;
+                    if (!enoughRoomAbove && enoughRoomBelow) above = false;
+                } else {
+                    above = false;
+                    if (!enoughRoomBelow && enoughRoomAbove) above = true;
+                }
             }
 
             if (!enoughRoomOnRight) {
