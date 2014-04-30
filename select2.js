@@ -1270,12 +1270,31 @@ the specific language governing permissions and limitations under the Apache Lic
                 return {
                     width  : Math.max(document.documentElement.scrollWidth,  $(window).width()),
                     height : Math.max(document.documentElement.scrollHeight, $(window).height())
-                }
+                };
             }
+        },
+
+        shouldClose: function() {
+            var event;
+
+            if (!this.opened()) return false;
+
+            event = $.Event("select2-closing");
+            this.opts.element.trigger(event);
+            return !event.isDefaultPrevented();
         },
 
         // abstract
         close: function () {
+            if (!this.shouldClose()) return false;
+
+            this.closing();
+
+            return true;
+
+        },
+
+        closing: function () {
             if (!this.opened()) return;
 
             var cid = this.containerId,
