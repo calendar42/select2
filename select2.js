@@ -1483,8 +1483,7 @@ the specific language governing permissions and limitations under the Apache Lic
             }
         },
         toggleClearButton : function(){
-            var search = this.search;
-            if(search.val().length !== 0 || this.data().length !== 0){
+            if(this.getVal().length !== 0 || this.data().length !== 0){
                 this.clearbutton.show();
             }else{
                 this.clearbutton.hide();
