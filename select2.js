@@ -662,6 +662,7 @@ the specific language governing permissions and limitations under the Apache Lic
             this.container.data("select2", this);
 
             this.dropdown = this.container.find(".select2-drop");
+            this.clearbutton = this.container.find(".select2-clear-button");
             this.dropdown.addClass(evaluate(opts.dropdownCssClass));
             this.dropdown.data("select2", this);
 
@@ -708,6 +709,15 @@ the specific language governing permissions and limitations under the Apache Lic
                     this.highlightUnderEvent(e);
                     this.selectHighlighted(e);
                 }
+            }));
+
+            this.clearbutton.on("click", this.bind(function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                this.val("");
+                this.close();
+                this.open();
             }));
 
             // trap all mouse events from leaving the dropdown. sometimes there may be a modal that is listening
@@ -1081,6 +1091,7 @@ the specific language governing permissions and limitations under the Apache Lic
         // abstract
         positionDropdown: function() {
             var $dropdown = this.dropdown,
+                $clearbutton = this.clearbutton,
                 offset = this.container.offset(),
                 height = this.container.outerHeight(false),
                 width = this.container.outerWidth(false),
@@ -1112,8 +1123,13 @@ the specific language governing permissions and limitations under the Apache Lic
                 this.container.removeClass('select2-drop-auto-width');
             }
 
-            //console.log("below/ droptop:", dropTop, "dropHeight", dropHeight, "sum", (dropTop+dropHeight)+" viewport bottom", viewportBottom, "enough?", enoughRoomBelow);
-            //console.log("above/ offset.top", offset.top, "dropHeight", dropHeight, "top", (offset.top-dropHeight), "scrollTop", this.body().scrollTop(), "enough?", enoughRoomAbove);
+            // console.log("below/ droptop:", dropTop, "dropHeight", dropHeight, "sum", (dropTop+dropHeight)+" viewport bottom", viewportBottom, "enough?", enoughRoomBelow);
+            // console.log("above/ offset.top", offset.top, "dropHeight", dropHeight, "top", (offset.top-dropHeight), "scrollTop", this.body().scrollTop(), "enough?", enoughRoomAbove);
+
+            if (this.opts.dropdownAutoHeight) {
+                var $resultsList = $('.select2-results', $dropdown);
+                $resultsList.css('max-height', Math.round(viewportBottom - dropTop));
+            }
 
             // fix positioning when body has an offset and is not position: static
 
@@ -1160,6 +1176,19 @@ the specific language governing permissions and limitations under the Apache Lic
             }, evaluate(this.opts.dropdownCss));
 
             $dropdown.css(css);
+
+            var btnMargin = Math.round((height - $clearbutton.outerHeight(false)) / 2);
+            var btnTop = offset.top + btnMargin;
+            var btnLeft = (dropLeft + dropWidth) - ($clearbutton.outerWidth(false) + btnMargin);
+
+            css = $.extend({
+                position: 'absolute',
+                'z-index': 9999,
+                top: btnTop,
+                left: btnLeft,
+            }, evaluate(this.opts.dropdownCss));
+
+            $clearbutton.css(css);
         },
 
         // abstract
@@ -1215,6 +1244,7 @@ the specific language governing permissions and limitations under the Apache Lic
 
             if(this.dropdown[0] !== this.body().children().last()[0]) {
                 this.dropdown.detach().appendTo(this.body());
+                this.clearbutton.detach().appendTo(this.body());
             }
 
             // create the dropdown mask if doesnt already exist
@@ -1251,6 +1281,7 @@ the specific language governing permissions and limitations under the Apache Lic
             mask.css(_makeMaskCss());
             mask.show();
             this.dropdown.show();
+            this.clearbutton.show();
             this.positionDropdown();
 
             this.dropdown.addClass("select2-drop-active");
@@ -1310,6 +1341,7 @@ the specific language governing permissions and limitations under the Apache Lic
             $("#select2-drop-mask").hide();
             this.dropdown.removeAttr("id"); // only the active dropdown has the select2-drop id
             this.dropdown.hide();
+            this.clearbutton.hide();
             this.container.removeClass("select2-dropdown-open");
             this.results.empty();
 
@@ -2268,6 +2300,9 @@ the specific language governing permissions and limitations under the Apache Lic
                 "    <input type='text' autocomplete='off' autocorrect='off' autocapitilize='off' spellcheck='false' class='select2-input'>" ,
                 "  </li>" ,
                 "</ul>" ,
+                "<div class='select2-clear-button' style='display:none;'>",
+                    "<a href='#clear-input' class='clear-select'><i class='icon icon-remove-sign' /></a>",
+                "</div>",
                 "<div class='select2-drop select2-drop-multi select2-display-none'>" ,
                 "   <ul class='select2-results'>" ,
                 "   </ul>" ,
@@ -2364,7 +2399,7 @@ the specific language governing permissions and limitations under the Apache Lic
                 //killEvent(e);
                 _this.search[0].focus();
                 _this.selectChoice($(this));
-            })
+            });
             //.sortable({
             //    items: " > li",
             //    tolerance: "pointer",
