@@ -1285,11 +1285,13 @@ the specific language governing permissions and limitations under the Apache Lic
             mask.css(_makeMaskCss());
             mask.show();
             this.dropdown.show();
-            this.toggleClearButton();
+            
             this.positionDropdown();
 
             this.dropdown.addClass("select2-drop-active");
             this.ensureHighlightVisible();
+
+            this.toggleClearButton();
 
             // attach listeners to events that can change the position of the container and thus require
             // the position of the dropdown to be updated as well so it does not come unglued from the container
@@ -1483,10 +1485,12 @@ the specific language governing permissions and limitations under the Apache Lic
             }
         },
         toggleClearButton : function(){
-            if(this.getVal().length !== 0 || this.data().length !== 0){
-                this.clearbutton.show();
-            }else{
-                this.clearbutton.hide();
+            if(this.clearbutton.length>0){
+                if(this.search.val() !== "" || this.getVal().length !== 0){
+                    this.clearbutton.show();
+                }else{
+                    this.clearbutton.hide();
+                }
             }
         },
         // abstract
@@ -2293,6 +2297,15 @@ the specific language governing permissions and limitations under the Apache Lic
                     }
                 }
             }
+        },
+        toggleClearButton : function(){
+            if(this.clearbutton.length>0){
+                if(this.search.val() !== "" || this.val() !== ""){
+                    this.clearbutton.show();
+                }else{
+                    this.clearbutton.hide();
+                }
+            }
         }
     });
 
@@ -2621,7 +2634,7 @@ the specific language governing permissions and limitations under the Apache Lic
                 maxWidth = this.getMaxSearchWidth();
 
             if (placeholder !== undefined  && this.getVal().length === 0 && this.search.hasClass("select2-focused") === false) {
-                this.search.val(placeholder).addClass("select2-default");
+                this.search.attr('placeholder',placeholder).addClass("select2-default");
                 // stretch the search box to full width of the container so as much of the placeholder is visible as possible
                 // we could call this.resizeSearch(), but we do not because that requires a sizer and we do not want to create one so early because of a firefox bug, see #944
                 this.search.width(maxWidth > 0 ? maxWidth : this.container.css("width"));
