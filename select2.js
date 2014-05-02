@@ -625,7 +625,7 @@ the specific language governing permissions and limitations under the Apache Lic
 
         // abstract
         init: function (opts) {
-            var results, search, resultsSelector = ".select2-results", disabled, readonly;
+            var results, search, resultsSelector = ".select2-results", disabled, readonly, self = this;
 
             // prepare options
             this.opts = opts = this.prepareOpts(opts);
@@ -710,6 +710,10 @@ the specific language governing permissions and limitations under the Apache Lic
                     this.selectHighlighted(e);
                 }
             }));
+
+            this.search.on('keydown keyup',function(e){
+                self.toggleClearButton();
+            });
 
             this.clearbutton.on("click", this.bind(function (e) {
                 e.preventDefault();
@@ -1281,7 +1285,7 @@ the specific language governing permissions and limitations under the Apache Lic
             mask.css(_makeMaskCss());
             mask.show();
             this.dropdown.show();
-            this.clearbutton.show();
+            this.toggleClearButton();
             this.positionDropdown();
 
             this.dropdown.addClass("select2-drop-active");
@@ -1341,7 +1345,7 @@ the specific language governing permissions and limitations under the Apache Lic
             $("#select2-drop-mask").hide();
             this.dropdown.removeAttr("id"); // only the active dropdown has the select2-drop id
             this.dropdown.hide();
-            this.clearbutton.hide();
+            this.toggleClearButton();
             this.container.removeClass("select2-dropdown-open");
             this.results.empty();
 
@@ -1479,7 +1483,14 @@ the specific language governing permissions and limitations under the Apache Lic
                 this.results.find(".select2-highlighted").removeClass("select2-highlighted");
             }
         },
-
+        toggleClearButton : function(){
+            var search = this.search;
+            if(search.val().length !== 0 || this.data().length !== 0){
+                this.clearbutton.show();
+            }else{
+                this.clearbutton.hide();
+            }
+        },
         // abstract
         loadMoreIfNeeded: function () {
             var results = this.results,
