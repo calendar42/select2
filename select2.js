@@ -768,6 +768,7 @@ the specific language governing permissions and limitations under the Apache Lic
 
                 select2.container.remove();
                 select2.dropdown.remove();
+                select2.clearbutton.remove();
                 select2.opts.element
                     .removeClass("select2-offscreen")
                     .removeData("select2")
@@ -1486,7 +1487,9 @@ the specific language governing permissions and limitations under the Apache Lic
         },
         toggleClearButton : function(){
             if(this.clearbutton.length>0){
-                if(this.search.val() !== "" || this.getVal().length !== 0){
+                var value = this.search.val();
+
+                if((value !== "" && value !== this.getPlaceholder()) || this.getVal().length > 0){
                     this.clearbutton.show();
                 }else{
                     this.clearbutton.hide();
@@ -2634,7 +2637,7 @@ the specific language governing permissions and limitations under the Apache Lic
                 maxWidth = this.getMaxSearchWidth();
 
             if (placeholder !== undefined  && this.getVal().length === 0 && this.search.hasClass("select2-focused") === false) {
-                this.search.attr('placeholder',placeholder).addClass("select2-default");
+                this.search.val(placeholder).addClass("select2-default");
                 // stretch the search box to full width of the container so as much of the placeholder is visible as possible
                 // we could call this.resizeSearch(), but we do not because that requires a sizer and we do not want to create one so early because of a firefox bug, see #944
                 this.search.width(maxWidth > 0 ? maxWidth : this.container.css("width"));
