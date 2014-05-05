@@ -540,9 +540,9 @@ input[type="text"].select2-input {
     cursor: default;
     border: 1px solid #aaaaaa;
 
-    -webkit-border-radius: 13px;
-       -moz-border-radius: 13px;
-            border-radius: 13px;
+    -webkit-border-radius: 3px;
+       -moz-border-radius: 3px;
+            border-radius: 3px;
 
 /*    -webkit-box-shadow: 0 0 2px #ffffff inset, 0 1px 0 rgba(0,0,0,0.05);
        -moz-box-shadow: 0 0 2px #ffffff inset, 0 1px 0 rgba(0,0,0,0.05);
@@ -585,6 +585,10 @@ input[type="text"].select2-input {
 
     font-size: 1px;
     outline: none;
+}
+
+.select2-search-choice-close:hover {
+    text-decoration: none;
 }
 
 .select2-container-multi .select2-search-choice-close {
@@ -685,17 +689,17 @@ li.select2-search-choice {
 }
 
 @-moz-keyframes highLightElement {
-    0%   { background-color: #FFAE03;}
-    50%  { background-color: #FFAE03;}
+    0%   { background-color: #DAF2F8;}
+    50%  { background-color: #DAF2F8;}
     100% { background-color: transparent; }
 }
 @-webkit-keyframes highLightElement {
-    0%   { background-color: #FFAE03;}
-    50%  { background-color: #FFAE03;}
+    0%   { background-color: #DAF2F8;}
+    50%  { background-color: #DAF2F8;}
     100% { background-color: transparent; }
 }
 @keyframes highLightElement {
-    0%   { background-color: #FFAE03;}
-    50%  { background-color: #FFAE03;}
+    0%   { background-color: #DAF2F8;}
+    50%  { background-color: #DAF2F8;}
     100% { background-color: transparent; }
 }
