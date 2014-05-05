@@ -531,7 +531,7 @@ input[type="text"].select2-input {
 }
 
 .select2-container-multi .select2-choices .select2-search-choice {
-    padding: 3px 5px 3px 18px;
+    padding: 5px 7px 5px 22px;
     margin: 3px 0 3px 5px;
     position: relative;
 
@@ -540,9 +540,9 @@ input[type="text"].select2-input {
     cursor: default;
     border: 1px solid #aaaaaa;
 
-    -webkit-border-radius: 3px;
-       -moz-border-radius: 3px;
-            border-radius: 3px;
+    -webkit-border-radius: 13px;
+       -moz-border-radius: 13px;
+            border-radius: 13px;
 
 /*    -webkit-box-shadow: 0 0 2px #ffffff inset, 0 1px 0 rgba(0,0,0,0.05);
        -moz-box-shadow: 0 0 2px #ffffff inset, 0 1px 0 rgba(0,0,0,0.05);
@@ -581,14 +581,14 @@ input[type="text"].select2-input {
     height: 13px;
     position: absolute;
     right: 3px;
-    top: 4px;
+    top: 6px;
 
     font-size: 1px;
     outline: none;
 }
 
 .select2-container-multi .select2-search-choice-close {
-    left: 3px;
+    left: 7px;
 }
 
 .select2-container-multi .select2-choices .select2-search-choice .select2-search-choice-close:hover {
@@ -662,4 +662,40 @@ input[type="text"].select2-input {
   .select2-search input {
       background-position: 100% -21px !important;
   }
+}
+
+
+/*hightlight animation when the element is added to the dom*/
+
+li.select2-search-choice {
+    -moz-animation-name: highLightElement;
+    -moz-animation-iteration-count: once;
+    -moz-animation-timing-function: ease-in;
+    -moz-animation-duration: 0.5s;
+
+    -webkit-animation-name: highLightElement;
+    -webkit-animation-iteration-count: once;
+    -webkit-animation-timing-function: ease-in;
+    -webkit-animation-duration: 0.5s;
+
+    animation-name: highLightElement;
+    animation-iteration-count: once;
+    animation-timing-function: ease-in;
+    animation-duration: 0.5s;
+}
+
+@-moz-keyframes highLightElement {
+    0%   { background-color: #FFAE03;}
+    50%  { background-color: #FFAE03;}
+    100% { background-color: transparent; }
+}
+@-webkit-keyframes highLightElement {
+    0%   { background-color: #FFAE03;}
+    50%  { background-color: #FFAE03;}
+    100% { background-color: transparent; }
+}
+@keyframes highLightElement {
+    0%   { background-color: #FFAE03;}
+    50%  { background-color: #FFAE03;}
+    100% { background-color: transparent; }
 }
