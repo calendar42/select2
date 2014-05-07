@@ -724,6 +724,24 @@ the specific language governing permissions and limitations under the Apache Lic
                 this.open();
             }));
 
+            this.search.off("touchstart").on("touchstart", function() {              // should fix iOS focus bug
+                var input = self.search;
+
+                if (input.length > 0) {
+                    self.opts.element.trigger($.Event("select2-focus"));
+                    //fixes lost focus on iOS
+                    //CHECK IF NOTHING HAPPENS IF THIS IS ALLWAYS DONE IN MOBILE DEVICES
+                     if(this.opts.mobile === true){
+                        /* IF IS NO INBROWSERVERSION AND IF IS IOS AND IS MORE THAN V7 */
+                        if(this.opts.platform !== undefined && this.opts.platform === 'ios'){
+                            input.focus();
+                        }
+                    }
+                } else {
+                    _log.error("%@ : Unable to find input, can't not focus input".fmt(me));
+                }
+            });
+
             // trap all mouse events from leaving the dropdown. sometimes there may be a modal that is listening
             // for mouse events outside of itself so it can close itself. since the dropdown is now outside the select2's
             // dom it will trigger the popup close, which is not what we want
@@ -1123,8 +1141,7 @@ the specific language governing permissions and limitations under the Apache Lic
                 dropWidth = $dropdown.outerWidth(false) + (resultsListNode.scrollHeight === resultsListNode.clientHeight ? 0 : scrollBarDimensions.width);
                 dropWidth > width ? width = dropWidth : dropWidth = width;
                 enoughRoomOnRight = dropLeft + dropWidth <= viewPortRight;
-            }
-            else {
+            }else {
                 this.container.removeClass('select2-drop-auto-width');
             }
 
@@ -1133,7 +1150,17 @@ the specific language governing permissions and limitations under the Apache Lic
 
             if (this.opts.dropdownAutoHeight) {
                 var $resultsList = $('.select2-results', $dropdown);
-                $resultsList.css('max-height', Math.round(viewportBottom - dropTop));
+                if(this.opts.mobile === true){
+                    var maxHeight = window.innerHeight - (window.innerHeight - offset.top);
+                    /* IF IS NO INBROWSERVERSION AND IF IS IOS AND IS MORE THAN V7 */
+                    if(this.opts.platform !== undefined && this.opts.platform === 'ios' && this.opts.version !== undefined && parseInt(this.opts.platform) >= 7){
+                        maxHeight -= 20;
+                    }
+                    $resultsList.css('max-height', maxHeight);
+
+                }else{
+                    $resultsList.css('max-height', Math.round(viewportBottom - dropTop));
+                }
             }
 
             // fix positioning when body has an offset and is not position: static
