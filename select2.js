@@ -701,7 +701,10 @@ the specific language governing permissions and limitations under the Apache Lic
 
             installKeyUpChangeEvent(search);
             search.on("keyup-change input paste", this.bind(this.updateResults));
-            search.on("focus", function () { search.addClass("select2-focused"); });
+            search.on("focus", function () { 
+                search.attr('placeholder',self.getPlaceholder());
+                search.addClass("select2-focused");
+            });
             search.on("blur", function () { search.removeClass("select2-focused");});
 
             this.dropdown.on("mouseup", resultsSelector, this.bind(function (e) {
@@ -715,7 +718,7 @@ the specific language governing permissions and limitations under the Apache Lic
                 self.toggleClearButton();
             });
 
-            this.clearbutton.on("click", this.bind(function (e) {
+            this.clearbutton.on("touchstart click", this.bind(function (e) {
                 e.preventDefault();
                 e.stopPropagation();
 
@@ -724,16 +727,16 @@ the specific language governing permissions and limitations under the Apache Lic
                 this.open();
             }));
 
+            /*  ONLY MOBILE VERSION  */
             this.search.off("touchstart").on("touchstart", function() {              // should fix iOS focus bug
                 var input = self.search;
-
                 if (input.length > 0) {
                     self.opts.element.trigger($.Event("select2-focus"));
                     //fixes lost focus on iOS
                     //CHECK IF NOTHING HAPPENS IF THIS IS ALLWAYS DONE IN MOBILE DEVICES
-                     if(this.opts.mobile === true){
+                     if(self.opts.mobile === true){
                         /* IF IS NO INBROWSERVERSION AND IF IS IOS AND IS MORE THAN V7 */
-                        if(this.opts.platform !== undefined && this.opts.platform === 'ios'){
+                        if(self.opts.isiOS){
                             input.focus();
                         }
                     }
@@ -745,7 +748,7 @@ the specific language governing permissions and limitations under the Apache Lic
             // trap all mouse events from leaving the dropdown. sometimes there may be a modal that is listening
             // for mouse events outside of itself so it can close itself. since the dropdown is now outside the select2's
             // dom it will trigger the popup close, which is not what we want
-            this.dropdown.on("click mouseup mousedown", function (e) { e.stopPropagation(); });
+            this.dropdown.on("touchstart click mouseup mousedown", function (e) { e.stopPropagation(); });
 
             if ($.isFunction(this.opts.initSelection)) {
                 // initialize selection based on the current value of the source element
@@ -1153,7 +1156,7 @@ the specific language governing permissions and limitations under the Apache Lic
                 if(this.opts.mobile === true){
                     var maxHeight = window.innerHeight - (window.innerHeight - offset.top);
                     /* IF IS NO INBROWSERVERSION AND IF IS IOS AND IS MORE THAN V7 */
-                    if(this.opts.platform !== undefined && this.opts.platform === 'ios' && this.opts.version !== undefined && parseInt(this.opts.platform) >= 7){
+                    if(this.opts.isiOS && this.opts.version !== undefined && parseInt(this.opts.mobileVersion) >= 7){
                         maxHeight -= 20;
                     }
                     $resultsList.css('max-height', maxHeight);
@@ -2664,7 +2667,7 @@ the specific language governing permissions and limitations under the Apache Lic
                 maxWidth = this.getMaxSearchWidth();
 
             if (placeholder !== undefined  && this.getVal().length === 0 && this.search.hasClass("select2-focused") === false) {
-                this.search.val(placeholder).addClass("select2-default");
+                this.search.val(placeholder).addClass("select2-default").removeAttr("placeholder");
                 // stretch the search box to full width of the container so as much of the placeholder is visible as possible
                 // we could call this.resizeSearch(), but we do not because that requires a sizer and we do not want to create one so early because of a firefox bug, see #944
                 this.search.width(maxWidth > 0 ? maxWidth : this.container.css("width"));
