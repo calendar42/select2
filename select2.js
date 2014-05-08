@@ -707,7 +707,7 @@ the specific language governing permissions and limitations under the Apache Lic
             });
             search.on("blur", function () { search.removeClass("select2-focused");});
 
-            this.dropdown.on("mouseup", resultsSelector, this.bind(function (e) {
+            this.dropdown.on("mouseup touchend", resultsSelector, this.bind(function (e) {
                 if ($(e.target).closest(".select2-result-selectable").length > 0) {
                     this.highlightUnderEvent(e);
                     this.selectHighlighted(e);
@@ -2577,7 +2577,7 @@ the specific language governing permissions and limitations under the Apache Lic
 
             }));
 
-            this.search.on("keyup", this.bind(function (e) {
+            this.search.on("keyup touchend", this.bind(function (e) {
                 this.keydowns = 0;
                 this.resizeSearch();
             })
@@ -2595,7 +2595,7 @@ the specific language governing permissions and limitations under the Apache Lic
                 this.opts.element.trigger($.Event("select2-blur"));
             }));
 
-            this.container.on("mousedown", selector, this.bind(function (e) {
+            this.container.on("touchstart mousedown", selector, this.bind(function (e) {
                 if (!this.isInterfaceEnabled()) return;
                 if ($(e.target).closest(".select2-search-choice").length > 0) {
                     // clicked inside a select2 search choice, do not open
@@ -2818,7 +2818,7 @@ the specific language governing permissions and limitations under the Apache Lic
             if(enableChoice){
               choice.find(".select2-search-choice-close")
                   .on("mousedown", killEvent)
-                  .on("click dblclick", this.bind(function (e) {
+                  .on("click dblclick touchstart", this.bind(function (e) {
                   if (!this.isInterfaceEnabled()) return;
 
                   $(e.target).closest(".select2-search-choice").fadeOut('fast', this.bind(function(){
