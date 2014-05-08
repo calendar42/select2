@@ -1311,7 +1311,6 @@ the specific language governing permissions and limitations under the Apache Lic
             // move the global id to the correct dropdown
             $("#select2-drop").removeAttr("id");
             this.dropdown.attr("id", "select2-drop");
-
             // show the elements
             mask.css(_makeMaskCss());
             mask.show();
@@ -1729,7 +1728,11 @@ the specific language governing permissions and limitations under the Apache Lic
 
         // abstract
         focusSearch: function () {
-            focus(this.search);
+            if(this.opts.mobile) {
+                this.search.focus();
+            } else {
+                focus(this.search);
+            }
         },
 
         // abstract
@@ -2606,9 +2609,11 @@ the specific language governing permissions and limitations under the Apache Lic
                 if (!this.container.hasClass("select2-container-active")) {
                     this.opts.element.trigger($.Event("select2-focus"));
                 }
-                this.open();
                 this.focusSearch();
+                this.open();
+                
                 e.preventDefault();
+                e.stopImmediatePropagation();
             }));
 
             this.container.on("focus", selector, this.bind(function () {
