@@ -1156,7 +1156,7 @@ the specific language governing permissions and limitations under the Apache Lic
                 if(this.opts.mobile === true){
                     var maxHeight = window.innerHeight - (window.innerHeight - offset.top);
                     /* IF IS NO INBROWSERVERSION AND IF IS IOS AND IS MORE THAN V7 */
-                    if(this.opts.isiOS && this.opts.version !== undefined && parseInt(this.opts.mobileVersion) >= 7){
+                    if(this.opts.isiOS && this.opts.mobileVersion !== undefined && parseInt(this.opts.mobileVersion) >= 7){
                         maxHeight -= 20;
                     }
                     $resultsList.css('max-height', maxHeight);
