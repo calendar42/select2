@@ -2790,6 +2790,10 @@ the specific language governing permissions and limitations under the Apache Lic
 
             if (!options || !options.noFocus)
                 this.focusSearch();
+            /*scrollRight only in mobile and in multiselect*/
+            if(this.opts.mobile){
+                this.container.scrollLeft(this.container.innerWidth())
+            }
         },
 
         // multi
