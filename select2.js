@@ -1311,6 +1311,7 @@ the specific language governing permissions and limitations under the Apache Lic
             // move the global id to the correct dropdown
             $("#select2-drop").removeAttr("id");
             this.dropdown.attr("id", "select2-drop");
+
             // show the elements
             mask.css(_makeMaskCss());
             mask.show();
@@ -1728,11 +1729,7 @@ the specific language governing permissions and limitations under the Apache Lic
 
         // abstract
         focusSearch: function () {
-            if(this.opts.mobile) {
-                this.search.focus();
-            } else {
-                focus(this.search);
-            }
+            focus(this.search);
         },
 
         // abstract
@@ -1960,10 +1957,16 @@ the specific language governing permissions and limitations under the Apache Lic
                         killEventImmediately(e);
                         return false;
                     case KEY.TAB:
-                        if (!this.opts.tabOverrule) {
-                            this.selectHighlighted({noFocus: true});
+                        if(this.opts.selectOnTab){
+                            this.selectHighlighted();
+                            killEvent(e);
+                            return;
+                        } else {
+                            if (!this.opts.tabOverrule) {
+                                this.selectHighlighted({noFocus: true});
+                            }
+                            return;
                         }
-                        return;
                     case KEY.ESC:
                         this.cancel(e);
                         killEventImmediately(e);
@@ -2540,6 +2543,10 @@ the specific language governing permissions and limitations under the Apache Lic
                         if (this.opts.tabOverrule) {
                             e.preventDefault();
                             this.opts.tabOverrule(e);
+                            return;
+                        }else if(this.opts.selectOnTab){
+                            this.selectHighlighted();
+                            killEvent(e);
                             return;
                         } else {
                             this.selectHighlighted({noFocus:true});
