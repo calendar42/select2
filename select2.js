@@ -528,7 +528,14 @@ the specific language governing permissions and limitations under the Apache Lic
         if (!formatter) return false;
         throw new Error("formatterName must be a function or a falsy value");
     }
-
+     /**
+    * Returns a given value
+    * If given a function, returns its output
+    *
+    * @param val string|function
+    * @param context value of "this" to be passed to function
+    * @returns {*}
+    */
     function evaluate(val) {
         return $.isFunction(val) ? val() : val;
     }
@@ -676,7 +683,9 @@ the specific language governing permissions and limitations under the Apache Lic
             this.initContainer();
 
             installFilteredMouseMove(this.results);
-            this.dropdown.on("mousemove-filtered touchstart touchmove touchend", resultsSelector, this.bind(this.highlightUnderEvent));
+            if(!this.opts.mobile){
+                this.dropdown.on("mousemove-filtered", resultsSelector, this.bind(this.highlightUnderEvent));
+            }
 
             installDebouncedScroll(80, this.results);
             this.dropdown.on("scroll-debounced", resultsSelector, this.bind(this.loadMoreIfNeeded));
@@ -707,6 +716,7 @@ the specific language governing permissions and limitations under the Apache Lic
             });
             search.on("blur", function () { search.removeClass("select2-focused");});
 
+            
             this.dropdown.on("mouseup", resultsSelector, this.bind(function (e) {
                 if ($(e.target).closest(".select2-result-selectable").length > 0) {
                     this.highlightUnderEvent(e);
@@ -718,7 +728,7 @@ the specific language governing permissions and limitations under the Apache Lic
                 self.toggleClearButton();
             });
 
-            this.clearbutton.on("touch click", this.bind(function (e) {
+            this.clearbutton.on("touchstart click", this.bind(function (e) {
                 e.preventDefault();
                 e.stopPropagation();
 
@@ -726,19 +736,21 @@ the specific language governing permissions and limitations under the Apache Lic
                 this.close();
                 this.open();
             }));
-
+            
             /*  ONLY MOBILE VERSION  */
-            this.search.off("touchstart").on("touchstart", function() {              // should fix iOS focus bug
+            this.search.off("touchstart").on("touchstart", function(e) {              // should fix iOS focus bug
                 var input = self.search;
                 if (input.length > 0) {
-                    self.opts.element.trigger($.Event("select2-focus"));
+                    //self.opts.element.trigger($.Event("select2-focus"));
                     //fixes lost focus on iOS
                     //CHECK IF NOTHING HAPPENS IF THIS IS ALLWAYS DONE IN MOBILE DEVICES
                      if(self.opts.mobile === true){
                         /* IF IS NO INBROWSERVERSION AND IF IS IOS AND IS MORE THAN V7 */
-                        if(self.opts.isiOS){
-                            input.focus();
-                        }
+                        //if(self.opts.isiOS){
+                            focus(input);
+                        //}
+                        e.preventDefault();
+                        e.stopPropagation();
                     }
                 } else {
                     _log.error("%@ : Unable to find input, can't not focus input".fmt(me));
@@ -748,7 +760,9 @@ the specific language governing permissions and limitations under the Apache Lic
             // trap all mouse events from leaving the dropdown. sometimes there may be a modal that is listening
             // for mouse events outside of itself so it can close itself. since the dropdown is now outside the select2's
             // dom it will trigger the popup close, which is not what we want
-            this.dropdown.on("touchstart click mouseup mousedown", function (e) { e.stopPropagation(); });
+            this.dropdown.on("click mouseup mousedown touchstart touchmove touchend", function (e) { 
+                e.stopPropagation(); 
+            });
 
             if ($.isFunction(this.opts.initSelection)) {
                 // initialize selection based on the current value of the source element
@@ -869,7 +883,6 @@ the specific language governing permissions and limitations under the Apache Lic
 
                             label=$(document.createElement("div"));
                             label.addClass("select2-result-label");
-
                             formatted=opts.formatResult(result, label, query, self.opts.escapeMarkup);
                             if (formatted!==undefined) {
                                 label.html(formatted);
@@ -889,7 +902,6 @@ the specific language governing permissions and limitations under the Apache Lic
                             container.append(node);
                         }
                     };
-
                     populate(results, container, 0);
                 }
             }, $.fn.select2.defaults, opts);
@@ -1154,13 +1166,23 @@ the specific language governing permissions and limitations under the Apache Lic
             if (this.opts.dropdownAutoHeight) {
                 var $resultsList = $('.select2-results', $dropdown);
                 if(this.opts.mobile === true){
-                    var maxHeight = window.innerHeight - (window.innerHeight - offset.top);
+                    var maxHeight = window.innerHeight;
+                    if(this.opts.preferOpenAbove){
+                        maxHeight -= (window.innerHeight - offset.top);
+                    }else{
+                        var header = $dropdown.find(".header");
+                        var footer = $dropdown.find(".footer");
+                        var headerHeight = (header.length>0)?header.height():0;
+                        var footerHeight = (footer.length>0)?footer.height():0;
+                        maxHeight = maxHeight - height - offset.top - headerHeight - footerHeight;
+                    }
                     /* IF IS NO INBROWSERVERSION AND IF IS IOS AND IS MORE THAN V7 */
                     if(this.opts.isiOS && this.opts.mobileVersion !== undefined && parseInt(this.opts.mobileVersion) >= 7){
                         maxHeight -= 20;
+                    }else{
+                        maxHeight -= 5;
                     }
                     $resultsList.css('max-height', maxHeight);
-
                 }else{
                     $resultsList.css('max-height', Math.round(viewportBottom - dropTop));
                 }
@@ -1296,9 +1318,9 @@ the specific language governing permissions and limitations under the Apache Lic
                         if (self.opts.selectOnBlur) {
                             self.selectHighlighted({noFocus: true});
                         }
-                        self.close();
                         e.preventDefault();
                         e.stopPropagation();
+                        self.close();
                     }
                 });
             }
@@ -1690,7 +1712,6 @@ the specific language governing permissions and limitations under the Apache Lic
                     render("<li class='select2-no-results'>" + opts.formatNoMatches(search.val()) + "</li>");
                     return;
                 }
-
                 results.empty();
                 self.opts.populateResults.call(this, results, data.results, {term: search.val(), page: this.resultsPage, context:null});
 
@@ -1959,7 +1980,8 @@ the specific language governing permissions and limitations under the Apache Lic
                     case KEY.TAB:
                         if(this.opts.selectOnTab){
                             this.selectHighlighted();
-                            killEvent(e);
+                            killEventImmediately(e);
+                            e.stopPropagation();
                             return;
                         } else {
                             if (!this.opts.tabOverrule) {
@@ -2054,7 +2076,6 @@ the specific language governing permissions and limitations under the Apache Lic
             this.focusser.on("focus", this.bind(function(){
                 if (!this.container.hasClass("select2-container-active")) {
                     this.opts.element.trigger($.Event("select2-focus"));
-
                     this.open();
                 }
                 this.container.addClass("select2-container-active");
@@ -2502,11 +2523,15 @@ the specific language governing permissions and limitations under the Apache Lic
                     }
                     else if (e.which === KEY.BACKSPACE) {
                         this.unselect(selected.first());
-                        this.search.width(10);
+                        if(!_this.opts.mobile){
+                            this.search.width(10);
+                        }
                         selectedChoice = prev.length ? prev : next;
                     } else if (e.which == KEY.DELETE) {
                         this.unselect(selected.first());
-                        this.search.width(10);
+                        if(!_this.opts.mobile){
+                            this.search.width(10);
+                        }
                         selectedChoice = next.length ? next : null;
                     } else if (e.which == KEY.ENTER) {
                         selectedChoice = null;
@@ -2547,6 +2572,7 @@ the specific language governing permissions and limitations under the Apache Lic
                         }else if(this.opts.selectOnTab){
                             this.selectHighlighted();
                             killEvent(e);
+                            e.stopPropagation();
                             return;
                         } else {
                             this.selectHighlighted({noFocus:true});
@@ -2584,7 +2610,6 @@ the specific language governing permissions and limitations under the Apache Lic
                     // prevent form from being submitted
                     killEvent(e);
                 }
-
             }));
 
             this.search.on("keyup", this.bind(function (e) {
@@ -2605,7 +2630,7 @@ the specific language governing permissions and limitations under the Apache Lic
                 this.opts.element.trigger($.Event("select2-blur"));
             }));
 
-            this.container.on("touchstart mousedown", selector, this.bind(function (e) {
+            this.container.on("mousedown touchstart", selector, this.bind(function (e) {
                 if (!this.isInterfaceEnabled()) return;
                 if ($(e.target).closest(".select2-search-choice").length > 0) {
                     // clicked inside a select2 search choice, do not open
@@ -2617,6 +2642,7 @@ the specific language governing permissions and limitations under the Apache Lic
                     this.opts.element.trigger($.Event("select2-focus"));
                 }
                 this.focusSearch();
+                
                 this.open();
                 
                 e.preventDefault();
@@ -2684,7 +2710,10 @@ the specific language governing permissions and limitations under the Apache Lic
                 // we could call this.resizeSearch(), but we do not because that requires a sizer and we do not want to create one so early because of a firefox bug, see #944
                 this.search.width(maxWidth > 0 ? maxWidth : this.container.css("width"));
             } else {
-                this.search.val("").width(10);
+                this.search.val("");
+                if(!this.opts.mobile){
+                    this.search.width(10);
+                }
             }
         },
 
@@ -2773,7 +2802,9 @@ the specific language governing permissions and limitations under the Apache Lic
 
             if (this.opts.closeOnSelect) {
                 this.close();
-                this.search.width(10);
+                if(!this.opts.mobile){
+                    this.search.width(10);
+                }
             } else {
                 if (this.countSelectableResults()>0) {
                     this.search.width(10);
@@ -2797,10 +2828,6 @@ the specific language governing permissions and limitations under the Apache Lic
 
             if (!options || !options.noFocus)
                 this.focusSearch();
-            /*scrollRight only in mobile and in multiselect*/
-            if(this.opts.mobile){
-                this.container.scrollLeft(this.container.innerWidth())
-            }
         },
 
         // multi
@@ -2833,10 +2860,9 @@ the specific language governing permissions and limitations under the Apache Lic
 
             if(enableChoice){
               choice.find(".select2-search-choice-close")
-                  .on("mousedown", killEvent)
-                  .on("click dblclick touch", this.bind(function (e) {
+                  .on("mousedown touchstart", killEventImmediately)
+                  .on("click dblclick touchstart", this.bind(function (e) {
                   if (!this.isInterfaceEnabled()) return;
-
                   $(e.target).closest(".select2-search-choice").fadeOut('fast', this.bind(function(){
                       this.unselect($(e.target));
                       this.selection.find(".select2-search-choice-focus").removeClass("select2-search-choice-focus");
