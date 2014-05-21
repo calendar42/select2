@@ -801,6 +801,7 @@ the specific language governing permissions and limitations under the Apache Lic
 
             if (select2 !== undefined) {
 
+                $("#select2-drop-mask").remove();
                 select2.container.remove();
                 select2.dropdown.remove();
                 select2.clearbutton.remove();
