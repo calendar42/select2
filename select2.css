@@ -655,6 +655,13 @@ input[type="text"].select2-input {
     height: 100px;
     overflow: scroll;
 }
+
+.select2-drop .select2-results .member_wrapper .title{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 /* Retina-ize icons */
 
 @media only screen and (-webkit-min-device-pixel-ratio: 1.5), only screen and (min-resolution: 144dpi)  {

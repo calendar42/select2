@@ -1129,126 +1129,120 @@ the specific language governing permissions and limitations under the Apache Lic
 
         // abstract
         positionDropdown: function() {
+
             var $dropdown = this.dropdown,
-                $clearbutton = this.clearbutton,
-                offset = this.container.offset(),
                 height = this.container.outerHeight(false),
-                width = this.container.outerWidth(false),
-                dropHeight = $dropdown.outerHeight(false),
-                viewPortRight = $(window).scrollLeft() + $(window).width(),
-                viewportBottom = $(window).scrollTop() + $(window).height(),
+                offset = this.container.offset(),
                 dropTop = offset.top + height,
-                dropLeft = offset.left,
-                enoughRoomBelow = dropTop + dropHeight <= viewportBottom,
-                enoughRoomAbove = (offset.top - dropHeight) >= this.body().scrollTop(),
-                dropWidth = $dropdown.outerWidth(false),
-                enoughRoomOnRight = dropLeft + dropWidth <= viewPortRight,
-                aboveNow = $dropdown.hasClass("select2-drop-above"),
-                bodyOffset,
-                above,
-                css,
-                resultsListNode;
+                dropWidth = $dropdown.outerWidth(false);
 
-            if (this.opts.dropdownAutoWidth) {
-                resultsListNode = $('.select2-results', $dropdown)[0];
-                $dropdown.addClass('select2-drop-auto-width');
-                $dropdown.css('width', '');
-                // Add scrollbar width to dropdown if vertical scrollbar is present
-                dropWidth = $dropdown.outerWidth(false) + (resultsListNode.scrollHeight === resultsListNode.clientHeight ? 0 : scrollBarDimensions.width);
-                dropWidth > width ? width = dropWidth : dropWidth = width;
-                enoughRoomOnRight = dropLeft + dropWidth <= viewPortRight;
-            }else {
-                this.container.removeClass('select2-drop-auto-width');
-            }
-
-            // console.log("below/ droptop:", dropTop, "dropHeight", dropHeight, "sum", (dropTop+dropHeight)+" viewport bottom", viewportBottom, "enough?", enoughRoomBelow);
-            // console.log("above/ offset.top", offset.top, "dropHeight", dropHeight, "top", (offset.top-dropHeight), "scrollTop", this.body().scrollTop(), "enough?", enoughRoomAbove);
-
-            if (this.opts.dropdownAutoHeight) {
+            if(this.opts.mobile === true && this.opts.dropdownAutoHeight && !this.opts.preferOpenAbove){
                 var $resultsList = $('.select2-results', $dropdown);
-                if(this.opts.mobile === true){
-                    var maxHeight = window.innerHeight;
-                    if(this.opts.preferOpenAbove){
-                        maxHeight -= (window.innerHeight - offset.top);
-                    }else{
-                        // var header = $dropdown.find(".header");
-                        // var footer = $dropdown.find(".footer");
-                        // var headerHeight = (header.length>0)?header.height():0;
-                        // var footerHeight = (footer.length>0)?footer.height():0;
-                        // maxHeight = maxHeight - height - offset.top - headerHeight - footerHeight;
-                        var height = '100%';
-                        maxHeight = '100%';
-                        $resultsList.css('height', height);
-                    }
-                    /* IF IS NO INBROWSERVERSION AND IF IS IOS AND IS MORE THAN V7 */
-                    // if(this.opts.isiOS && this.opts.mobileVersion !== undefined && parseInt(this.opts.mobileVersion) >= 7){
-                        //maxHeight -= 20;
-                    // }
+                var mobileDropHeight = '100%';
+                var maxHeight = '100%';
+                $resultsList.css('height', mobileDropHeight);
+                $resultsList.css('max-height', maxHeight);
+                css = $.extend({
+                    top: dropTop,
+                }, evaluate(this.opts.dropdownCss));
+                $dropdown.css(css);
+            }else{
+                var $clearbutton = this.clearbutton,
+                    width = this.container.outerWidth(false),
+                    dropHeight = $dropdown.outerHeight(false),
+                    dropLeft = offset.left,
+                    viewPortRight = $(window).scrollLeft() + $(window).width(),
+                    viewportBottom = $(window).scrollTop() + $(window).height(),
+                    enoughRoomBelow = dropTop + dropHeight <= viewportBottom,
+                    enoughRoomAbove = (offset.top - dropHeight) >= this.body().scrollTop(),
+                    enoughRoomOnRight = dropLeft + dropWidth <= viewPortRight,
+                    aboveNow = $dropdown.hasClass("select2-drop-above"),
+                    bodyOffset,
+                    css,
+                    resultsListNode;
 
-                    $resultsList.css('max-height', maxHeight);
-                }else{
-                    $resultsList.css('max-height', Math.round(viewportBottom - dropTop));
+                if (this.opts.dropdownAutoWidth) {
+                    resultsListNode = $('.select2-results', $dropdown)[0];
+                    $dropdown.addClass('select2-drop-auto-width');
+                    $dropdown.css('width', '');
+                    // Add scrollbar width to dropdown if vertical scrollbar is present
+                    dropWidth = $dropdown.outerWidth(false) + (resultsListNode.scrollHeight === resultsListNode.clientHeight ? 0 : scrollBarDimensions.width);
+                    dropWidth > width ? width = dropWidth : dropWidth = width;
+                    enoughRoomOnRight = dropLeft + dropWidth <= viewPortRight;
+                }else {
+                    this.container.removeClass('select2-drop-auto-width');
                 }
-            }
 
-            // fix positioning when body has an offset and is not position: static
+                // console.log("below/ droptop:", dropTop, "dropHeight", dropHeight, "sum", (dropTop+dropHeight)+" viewport bottom", viewportBottom, "enough?", enoughRoomBelow);
+                // console.log("above/ offset.top", offset.top, "dropHeight", dropHeight, "top", (offset.top-dropHeight), "scrollTop", this.body().scrollTop(), "enough?", enoughRoomAbove);
 
-            if (this.body().css('position') !== 'static') {
-                bodyOffset = this.body().offset();
-                dropTop -= bodyOffset.top;
-                dropLeft -= bodyOffset.left;
-            }
+                if (this.opts.dropdownAutoHeight) {
+                    var $resultsList = $('.select2-results', $dropdown);
+                    if(this.opts.mobile === true){
+                        var maxHeight = window.innerHeight;
+                        if(this.opts.preferOpenAbove){
+                            maxHeight -= (window.innerHeight - offset.top);
+                        }
+                        $resultsList.css('max-height', maxHeight);
+                    }else{
+                        $resultsList.css('max-height', Math.round(viewportBottom - dropTop));
+                    }
+                }
+                // fix positioning when body has an offset and is not position: static
+                if (this.body().css('position') !== 'static') {
+                    bodyOffset = this.body().offset();
+                    dropTop -= bodyOffset.top;
+                    dropLeft -= bodyOffset.left;
+                }
+                // always prefer the current above/below alignment, unless there is not enough room
 
-            // always prefer the current above/below alignment, unless there is not enough room
-
-            if (aboveNow) {
-                above = true;
-                if (!enoughRoomAbove && enoughRoomBelow) above = false;
-            } else {
-                // Prefere open above
-                if (this.opts.preferOpenAbove) {
+                if (aboveNow) {
                     above = true;
                     if (!enoughRoomAbove && enoughRoomBelow) above = false;
                 } else {
-                    above = false;
-                    if (!enoughRoomBelow && enoughRoomAbove) above = true;
+                    // Prefere open above
+                    if (this.opts.preferOpenAbove) {
+                        above = true;
+                        if (!enoughRoomAbove && enoughRoomBelow) above = false;
+                    } else {
+                        above = false;
+                        if (!enoughRoomBelow && enoughRoomAbove) above = true;
+                    }
                 }
+
+                if (!enoughRoomOnRight) {
+                   dropLeft = offset.left + width - dropWidth;
+                }
+
+                if (above) {
+                    dropTop = offset.top - dropHeight;
+                    this.container.addClass("select2-drop-above");
+                    $dropdown.addClass("select2-drop-above");
+                }
+                else {
+                    this.container.removeClass("select2-drop-above");
+                    $dropdown.removeClass("select2-drop-above");
+                }
+                 css = $.extend({
+                    top: dropTop,
+                    left: dropLeft,
+                    width: width
+                }, evaluate(this.opts.dropdownCss));
+
+                $dropdown.css(css);
+                var btnMargin = Math.round((height - $clearbutton.outerHeight(false)) / 2);
+                var btnTop = offset.top + btnMargin;
+                var btnLeft = (dropLeft + dropWidth) - ($clearbutton.outerWidth(false) + btnMargin);
+                css = $.extend({
+                    position: 'absolute',
+                    'z-index': 9999,
+                    top: btnTop,
+                    left: btnLeft,
+                }, evaluate(this.opts.dropdownCss));
+
+                $clearbutton.css(css);
             }
-
-            if (!enoughRoomOnRight) {
-               dropLeft = offset.left + width - dropWidth;
-            }
-
-            if (above) {
-                dropTop = offset.top - dropHeight;
-                this.container.addClass("select2-drop-above");
-                $dropdown.addClass("select2-drop-above");
-            }
-            else {
-                this.container.removeClass("select2-drop-above");
-                $dropdown.removeClass("select2-drop-above");
-            }
-
-            css = $.extend({
-                top: dropTop,
-                left: dropLeft,
-                width: width
-            }, evaluate(this.opts.dropdownCss));
-
-            $dropdown.css(css);
-
-            var btnMargin = Math.round((height - $clearbutton.outerHeight(false)) / 2);
-            var btnTop = offset.top + btnMargin;
-            var btnLeft = (dropLeft + dropWidth) - ($clearbutton.outerWidth(false) + btnMargin);
-
-            css = $.extend({
-                position: 'absolute',
-                'z-index': 9999,
-                top: btnTop,
-                left: btnLeft,
-            }, evaluate(this.opts.dropdownCss));
-
-            $clearbutton.css(css);
+           
         },
 
         // abstract
