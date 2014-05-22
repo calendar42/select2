@@ -717,7 +717,7 @@ the specific language governing permissions and limitations under the Apache Lic
             search.on("blur", function () { search.removeClass("select2-focused");});
 
             
-            this.dropdown.on("mouseup", resultsSelector, this.bind(function (e) {
+            this.dropdown.on("click", resultsSelector, this.bind(function (e) {
                 if ($(e.target).closest(".select2-result-selectable").length > 0) {
                     this.highlightUnderEvent(e);
                     this.selectHighlighted(e);
@@ -1242,7 +1242,6 @@ the specific language governing permissions and limitations under the Apache Lic
 
                 $clearbutton.css(css);
             }
-           
         },
 
         // abstract
@@ -2939,7 +2938,7 @@ the specific language governing permissions and limitations under the Apache Lic
                 }
             });
 
-            if (this.highlight() == -1 && noHighlightUpdate !== false){
+            if (this.highlight() == -1 && noHighlightUpdate !== false && this.opts.autoSelectFirst === true){
                 self.highlight(0);
             }
 
