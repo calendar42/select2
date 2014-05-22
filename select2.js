@@ -1171,18 +1171,20 @@ the specific language governing permissions and limitations under the Apache Lic
                     if(this.opts.preferOpenAbove){
                         maxHeight -= (window.innerHeight - offset.top);
                     }else{
-                        var header = $dropdown.find(".header");
-                        var footer = $dropdown.find(".footer");
-                        var headerHeight = (header.length>0)?header.height():0;
-                        var footerHeight = (footer.length>0)?footer.height():0;
-                        maxHeight = maxHeight - height - offset.top - headerHeight - footerHeight;
+                        // var header = $dropdown.find(".header");
+                        // var footer = $dropdown.find(".footer");
+                        // var headerHeight = (header.length>0)?header.height():0;
+                        // var footerHeight = (footer.length>0)?footer.height():0;
+                        // maxHeight = maxHeight - height - offset.top - headerHeight - footerHeight;
+                        var height = '100%';
+                        maxHeight = '100%';
+                        $resultsList.css('height', height);
                     }
                     /* IF IS NO INBROWSERVERSION AND IF IS IOS AND IS MORE THAN V7 */
-                    if(this.opts.isiOS && this.opts.mobileVersion !== undefined && parseInt(this.opts.mobileVersion) >= 7){
-                        maxHeight -= 20;
-                    }else{
-                        maxHeight -= 5;
-                    }
+                    // if(this.opts.isiOS && this.opts.mobileVersion !== undefined && parseInt(this.opts.mobileVersion) >= 7){
+                        //maxHeight -= 20;
+                    // }
+
                     $resultsList.css('max-height', maxHeight);
                 }else{
                     $resultsList.css('max-height', Math.round(viewportBottom - dropTop));
