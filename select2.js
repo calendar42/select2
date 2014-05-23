@@ -717,7 +717,7 @@ the specific language governing permissions and limitations under the Apache Lic
             search.on("blur", function () { search.removeClass("select2-focused");});
 
             
-            this.dropdown.on("click", resultsSelector, this.bind(function (e) {
+            this.dropdown.on("mouseup", resultsSelector, this.bind(function (e) {
                 if ($(e.target).closest(".select2-result-selectable").length > 0) {
                     this.highlightUnderEvent(e);
                     this.selectHighlighted(e);
@@ -741,13 +741,13 @@ the specific language governing permissions and limitations under the Apache Lic
             this.search.off("touchstart").on("touchstart", function(e) {              // should fix iOS focus bug
                 var input = self.search;
                 if (input.length > 0) {
-                    //self.opts.element.trigger($.Event("select2-focus"));
                     //fixes lost focus on iOS
                     //CHECK IF NOTHING HAPPENS IF THIS IS ALLWAYS DONE IN MOBILE DEVICES
                      if(self.opts.mobile === true){
                         /* IF IS NO INBROWSERVERSION AND IF IS IOS AND IS MORE THAN V7 */
                         if(self.opts.isiOS){
                             focus(input);
+                            //self.opts.element.trigger($.Event("select2-focus"));
                         }
                         e.preventDefault();
                         e.stopPropagation();
