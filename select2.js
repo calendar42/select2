@@ -717,7 +717,7 @@ the specific language governing permissions and limitations under the Apache Lic
             search.on("blur", function () { search.removeClass("select2-focused");});
 
             
-            this.dropdown.on("click", resultsSelector, this.bind(function (e) {
+            this.dropdown.on("mouseup", resultsSelector, this.bind(function (e) {
                 if ($(e.target).closest(".select2-result-selectable").length > 0) {
                     this.highlightUnderEvent(e);
                     this.selectHighlighted(e);
@@ -746,9 +746,9 @@ the specific language governing permissions and limitations under the Apache Lic
                     //CHECK IF NOTHING HAPPENS IF THIS IS ALLWAYS DONE IN MOBILE DEVICES
                      if(self.opts.mobile === true){
                         /* IF IS NO INBROWSERVERSION AND IF IS IOS AND IS MORE THAN V7 */
-                        //if(self.opts.isiOS){
+                        if(self.opts.isiOS){
                             focus(input);
-                        //}
+                        }
                         e.preventDefault();
                         e.stopPropagation();
                     }
@@ -760,7 +760,7 @@ the specific language governing permissions and limitations under the Apache Lic
             // trap all mouse events from leaving the dropdown. sometimes there may be a modal that is listening
             // for mouse events outside of itself so it can close itself. since the dropdown is now outside the select2's
             // dom it will trigger the popup close, which is not what we want
-            this.dropdown.on("click mouseup mousedown touchstart touchmove touchend", function (e) { 
+            this.dropdown.on("click mouseup mousedown touchmove touchstart touchend", function (e) { 
                 e.stopPropagation(); 
             });
 
@@ -2637,9 +2637,13 @@ the specific language governing permissions and limitations under the Apache Lic
                 if (!this.container.hasClass("select2-container-active")) {
                     this.opts.element.trigger($.Event("select2-focus"));
                 }
-                this.focusSearch();
-                
-                this.open();
+                /*  IF IS MOBILE NO SEARCH ON FOCUS... BUT FOCUS!! -_-    */
+                if(_this.opts.mobile !== true){
+                    this.focusSearch();
+                    this.open();
+                }else{
+                    this.search.focus();
+                }
                 
                 e.preventDefault();
                 e.stopImmediatePropagation();
