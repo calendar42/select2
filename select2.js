@@ -1134,7 +1134,8 @@ the specific language governing permissions and limitations under the Apache Lic
                 height = this.container.outerHeight(false),
                 offset = this.container.offset(),
                 dropTop = offset.top + height,
-                dropWidth = $dropdown.outerWidth(false);
+                dropWidth = $dropdown.outerWidth(false),
+                above;
 
             if(this.opts.mobile === true && this.opts.dropdownAutoHeight && !this.opts.preferOpenAbove){
                 var $resultsList = $('.select2-results', $dropdown);
@@ -2500,111 +2501,113 @@ the specific language governing permissions and limitations under the Apache Lic
 
             this.keydowns = 0;
             this.search.on("keydown", this.bind(function (e) {
-                if (!this.isInterfaceEnabled()) return;
+                if(e.which != 229){
+                    if (!this.isInterfaceEnabled()) return;
 
-                ++this.keydowns;
-                var selected = selection.find(".select2-search-choice-focus");
-                var prev = selected.prev(".select2-search-choice:not(.select2-locked)");
-                var next = selected.next(".select2-search-choice:not(.select2-locked)");
-                var pos = getCursorInfo(this.search);
+                    ++this.keydowns;
+                    var selected = selection.find(".select2-search-choice-focus");
+                    var prev = selected.prev(".select2-search-choice:not(.select2-locked)");
+                    var next = selected.next(".select2-search-choice:not(.select2-locked)");
+                    var pos = getCursorInfo(this.search);
 
-                if (selected.length &&
-                    (e.which == KEY.LEFT || e.which == KEY.RIGHT || e.which == KEY.BACKSPACE || e.which == KEY.DELETE || e.which == KEY.ENTER)) {
-                    var selectedChoice = selected;
-                    if (e.which == KEY.LEFT && prev.length) {
-                        selectedChoice = prev;
-                    }
-                    else if (e.which == KEY.RIGHT) {
-                        selectedChoice = next.length ? next : null;
-                    }
-                    else if (e.which === KEY.BACKSPACE) {
-                        this.unselect(selected.first());
-                        if(!_this.opts.mobile){
-                            this.search.width(10);
+                    if (selected.length &&
+                        (e.which == KEY.LEFT || e.which == KEY.RIGHT || e.which == KEY.BACKSPACE || e.which == KEY.DELETE || e.which == KEY.ENTER)) {
+                        var selectedChoice = selected;
+                        if (e.which == KEY.LEFT && prev.length) {
+                            selectedChoice = prev;
                         }
-                        selectedChoice = prev.length ? prev : next;
-                    } else if (e.which == KEY.DELETE) {
-                        this.unselect(selected.first());
-                        if(!_this.opts.mobile){
-                            this.search.width(10);
+                        else if (e.which == KEY.RIGHT) {
+                            selectedChoice = next.length ? next : null;
                         }
-                        selectedChoice = next.length ? next : null;
-                    } else if (e.which == KEY.ENTER) {
-                        selectedChoice = null;
-                    }
+                        else if (e.which === KEY.BACKSPACE) {
+                            this.unselect(selected.first());
+                            if(!_this.opts.mobile){
+                                this.search.width(10);
+                            }
+                            selectedChoice = prev.length ? prev : next;
+                        } else if (e.which == KEY.DELETE) {
+                            this.unselect(selected.first());
+                            if(!_this.opts.mobile){
+                                this.search.width(10);
+                            }
+                            selectedChoice = next.length ? next : null;
+                        } else if (e.which == KEY.ENTER) {
+                            selectedChoice = null;
+                        }
 
-                    this.selectChoice(selectedChoice);
-                    killEvent(e);
-                    if (!selectedChoice || !selectedChoice.length) {
-                        this.open();
-                    }
-                    return;
-                } else if (((e.which === KEY.BACKSPACE && this.keydowns == 1)
-                    || e.which == KEY.LEFT) && (pos.offset == 0 && !pos.length)) {
+                        this.selectChoice(selectedChoice);
+                        killEvent(e);
+                        if (!selectedChoice || !selectedChoice.length) {
+                            this.open();
+                        }
+                        return;
+                    } else if (((e.which === KEY.BACKSPACE && this.keydowns == 1)
+                        || e.which == KEY.LEFT) && (pos.offset == 0 && !pos.length)) {
 
-                    this.selectChoice(selection.find(".select2-search-choice:not(.select2-locked)").last());
-                    killEvent(e);
-                    return;
-                } else {
-                    this.selectChoice(null);
-                }
-
-                if (this.opened()) {
-                    switch (e.which) {
-                    case KEY.UP:
-                    case KEY.DOWN:
-                        this.moveHighlight((e.which === KEY.UP) ? -1 : 1);
+                        this.selectChoice(selection.find(".select2-search-choice:not(.select2-locked)").last());
                         killEvent(e);
                         return;
-                    case KEY.ENTER:
-                        this.selectHighlighted();
-                        killEvent(e);
-                        return;
-                    case KEY.TAB:
-                        if (this.opts.tabOverrule) {
-                            e.preventDefault();
-                            this.opts.tabOverrule(e);
+                    } else {
+                        this.selectChoice(null);
+                    }
+
+                    if (this.opened()) {
+                        switch (e.which) {
+                        case KEY.UP:
+                        case KEY.DOWN:
+                            this.moveHighlight((e.which === KEY.UP) ? -1 : 1);
+                            killEvent(e);
                             return;
-                        }else if(this.opts.selectOnTab){
+                        case KEY.ENTER:
                             this.selectHighlighted();
                             killEvent(e);
-                            e.stopPropagation();
                             return;
-                        } else {
-                            this.selectHighlighted({noFocus:true});
+                        case KEY.TAB:
+                            if (this.opts.tabOverrule) {
+                                e.preventDefault();
+                                this.opts.tabOverrule(e);
+                                return;
+                            }else if(this.opts.selectOnTab){
+                                this.selectHighlighted();
+                                killEvent(e);
+                                e.stopPropagation();
+                                return;
+                            } else {
+                                this.selectHighlighted({noFocus:true});
+                                return;
+                            }
+                        case KEY.ESC:
+                            this.cancel(e);
+                            killEvent(e);
                             return;
                         }
-                    case KEY.ESC:
-                        this.cancel(e);
+                    }
+
+                    if (e.which === KEY.TAB || KEY.isControl(e) || KEY.isFunctionKey(e)
+                     || e.which === KEY.BACKSPACE || e.which === KEY.ESC) {
+                        return;
+                    }
+
+                    if (e.which === KEY.ENTER) {
+                        if (this.opts.openOnEnter === false) {
+                            this.opts.onSubmit();
+                            return;
+                        } else if (e.altKey || e.ctrlKey || e.shiftKey || e.metaKey) {
+                            return;
+                        }
+                    }
+
+                    this.open();
+
+                    if (e.which === KEY.PAGE_UP || e.which === KEY.PAGE_DOWN) {
+                        // prevent the page from scrolling
                         killEvent(e);
-                        return;
                     }
-                }
 
-                if (e.which === KEY.TAB || KEY.isControl(e) || KEY.isFunctionKey(e)
-                 || e.which === KEY.BACKSPACE || e.which === KEY.ESC) {
-                    return;
-                }
-
-                if (e.which === KEY.ENTER) {
-                    if (this.opts.openOnEnter === false) {
-                        this.opts.onSubmit();
-                        return;
-                    } else if (e.altKey || e.ctrlKey || e.shiftKey || e.metaKey) {
-                        return;
+                    if (e.which === KEY.ENTER) {
+                        // prevent form from being submitted
+                        killEvent(e);
                     }
-                }
-
-                this.open();
-
-                if (e.which === KEY.PAGE_UP || e.which === KEY.PAGE_DOWN) {
-                    // prevent the page from scrolling
-                    killEvent(e);
-                }
-
-                if (e.which === KEY.ENTER) {
-                    // prevent form from being submitted
-                    killEvent(e);
                 }
             }));
 
