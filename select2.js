@@ -240,13 +240,11 @@ the specific language governing permissions and limitations under the Apache Lic
             to set focus */
         window.setTimeout(function() {
             var el=$el[0], pos=$el.val().length, range;
-
             $el.focus();
 
             /* make sure el received focus so we do not error out when trying to manipulate the caret.
                 sometimes modals or others listeners may steal it after its set */
             if ($el.is(":visible") && el === document.activeElement) {
-
                 /* after the focus is set move the caret to the end, necessary when we val()
                     just before setting focus */
                 if(el.setSelectionRange)
@@ -738,24 +736,23 @@ the specific language governing permissions and limitations under the Apache Lic
             }));
             
             /*  ONLY MOBILE VERSION  */
-            this.search.off("touchstart").on("touchstart", function(e) {              // should fix iOS focus bug
-                var input = self.search;
-                if (input.length > 0) {
-                    //fixes lost focus on iOS
-                    //CHECK IF NOTHING HAPPENS IF THIS IS ALLWAYS DONE IN MOBILE DEVICES
-                     if(self.opts.mobile === true){
+            if(self.opts.mobile === true && self.opts.isiOS){
+                this.search.off("touchstart").on("touchstart", function(e) {              // should fix iOS focus bug
+                    var input = self.search;
+                    if (input.length > 0) {
+                        //fixes lost focus on iOS
+                        //CHECK IF NOTHING HAPPENS IF THIS IS ALLWAYS DONE IN MOBILE DEVICES
                         /* IF IS NO INBROWSERVERSION AND IF IS IOS AND IS MORE THAN V7 */
-                        if(self.opts.isiOS){
-                            focus(input);
-                            //self.opts.element.trigger($.Event("select2-focus"));
-                        }
+                        focus(input);
+                        // test it in IOS
+                        // self.opts.element.trigger($.Event("select2-focus"));
                         e.preventDefault();
                         e.stopPropagation();
+                    } else {
+                        _log.error("%@ : Unable to find input, can't not focus input".fmt(me));
                     }
-                } else {
-                    _log.error("%@ : Unable to find input, can't not focus input".fmt(me));
-                }
-            });
+                });
+            }
 
             // trap all mouse events from leaving the dropdown. sometimes there may be a modal that is listening
             // for mouse events outside of itself so it can close itself. since the dropdown is now outside the select2's
@@ -2644,9 +2641,6 @@ the specific language governing permissions and limitations under the Apache Lic
                 }else{
                     this.search.focus();
                 }
-                
-                e.preventDefault();
-                e.stopImmediatePropagation();
             }));
 
             this.container.on("focus", selector, this.bind(function () {
