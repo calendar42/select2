@@ -737,17 +737,11 @@ the specific language governing permissions and limitations under the Apache Lic
             
             /*  ONLY MOBILE VERSION  */
             if(self.opts.mobile === true && self.opts.isiOS){
-                this.search.off("touchstart").on("touchstart", function(e) {              // should fix iOS focus bug
+                this.search.off("touchstart").on("touchstart", function(e) {
                     var input = self.search;
                     if (input.length > 0) {
                         //fixes lost focus on iOS
-                        //CHECK IF NOTHING HAPPENS IF THIS IS ALLWAYS DONE IN MOBILE DEVICES
-                        /* IF IS NO INBROWSERVERSION AND IF IS IOS AND IS MORE THAN V7 */
                         focus(input);
-                        // test it in IOS
-                        // self.opts.element.trigger($.Event("select2-focus"));
-                        e.preventDefault();
-                        e.stopPropagation();
                     } else {
                         _log.error("%@ : Unable to find input, can't not focus input".fmt(me));
                     }
@@ -757,8 +751,8 @@ the specific language governing permissions and limitations under the Apache Lic
             // trap all mouse events from leaving the dropdown. sometimes there may be a modal that is listening
             // for mouse events outside of itself so it can close itself. since the dropdown is now outside the select2's
             // dom it will trigger the popup close, which is not what we want
-            this.dropdown.on("click mouseup mousedown touchmove touchstart touchend", function (e) { 
-                e.stopPropagation(); 
+            this.dropdown.on("click mouseup mousedown touchmove touchstart touchend", function (e) {
+                e.stopPropagation();
             });
 
             if ($.isFunction(this.opts.initSelection)) {
