@@ -1396,6 +1396,13 @@ the specific language governing permissions and limitations under the Apache Lic
             this.toggleClearButton();
             this.search.removeClass("select2-active");
             this.opts.element.trigger($.Event("select2-close"));
+
+
+            this.container.removeClass("select2-container-active");
+            this.search.removeClass("select2-focused");
+            this.clearSearch();
+            this.search.blur();
+            // this.selectChoice(null);
         },
 
         // abstract
