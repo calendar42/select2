@@ -2852,23 +2852,23 @@ the specific language governing permissions and limitations under the Apache Lic
 
             if(enableChoice){
               choice.find(".select2-search-choice-close")
-                  .on("mousedown touchstart", killEventImmediately)
-                  .on("click dblclick touchstart", this.bind(function (e) {
-                  if (!this.isInterfaceEnabled()) return;
-                  $(e.target).closest(".select2-search-choice").fadeOut('fast', this.bind(function(){
-                      this.unselect($(e.target));
-                      this.selection.find(".select2-search-choice-focus").removeClass("select2-search-choice-focus");
-                      this.close();
-                      this.focusSearch();
-                      this.positionDropdown();
-                  })).dequeue();
-                  killEvent(e);
-              })).on("focus", this.bind(function () {
-                  if (!this.isInterfaceEnabled()) return;
+                    .on("mousedown touchstart", killEventImmediately)
+                    .on("click dblclick touchstart", this.bind(function (e) {
+                        if (!this.isInterfaceEnabled()) return;
+                        
+                        var selected = $(e.target).closest(".select2-search-choice");
+                        selected.fadeOut('fast', this.bind(function(){
+                            this.unselect(selected);
 
-                  this.container.addClass("select2-container-active");
-                  this.dropdown.addClass("select2-drop-active");
-              }));
+                            this.open();
+                        })).dequeue();
+                        killEvent(e);
+                    })).on("focus", this.bind(function () {
+                        if (!this.isInterfaceEnabled()) return;
+
+                        this.container.addClass("select2-container-active");
+                        this.dropdown.addClass("select2-drop-active");
+                    }));
             }
 
             choice.data("select2-data", data);
