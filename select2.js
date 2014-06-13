@@ -1397,11 +1397,6 @@ the specific language governing permissions and limitations under the Apache Lic
             this.search.removeClass("select2-active");
             this.opts.element.trigger($.Event("select2-close"));
 
-
-            this.container.removeClass("select2-container-active");
-            this.search.removeClass("select2-focused");
-            this.clearSearch();
-            this.search.blur();
             // this.selectChoice(null);
         },
 
@@ -2674,6 +2669,16 @@ the specific language governing permissions and limitations under the Apache Lic
             if (this.parent.enableInterface.apply(this, arguments)) {
                 this.search.prop("disabled", !this.isInterfaceEnabled());
             }
+        },
+
+        // multi
+        closing: function () {
+            this.parent.closing.apply(this, arguments);
+
+            this.container.removeClass("select2-container-active");
+            this.search.removeClass("select2-focused");
+            this.clearSearch();
+            this.search.blur();
         },
 
         // multi
