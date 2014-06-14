@@ -2453,6 +2453,8 @@ the specific language governing permissions and limitations under the Apache Lic
                 selected.removeClass("select2-search-choice-focus");
                 if (choice && choice.length) {
                     this.close();
+                    // make sure that the focus is still in the search field after closing, other wise the key-downs are no longer handled (for instance backspace to remove the currently focused choice)
+                    this.search.focus();
                     choice.addClass("select2-search-choice-focus");
                     this.opts.element.trigger("choice-selected", choice);
                 }
@@ -2495,7 +2497,7 @@ the specific language governing permissions and limitations under the Apache Lic
 
             this.keydowns = 0;
             this.search.on("keydown", this.bind(function (e) {
-                if(e.which != 229){
+                if(e.which != 229){ // for japanese keyboards
                     if (!this.isInterfaceEnabled()) return;
 
                     ++this.keydowns;
