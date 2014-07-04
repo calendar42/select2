@@ -714,10 +714,18 @@ the specific language governing permissions and limitations under the Apache Lic
             });
             search.on("blur", function () { search.removeClass("select2-focused");});
 
+            this.dropdown.on("touchstart",this.bind(function(event){
+                event.stopImmediatePropagation();
+                if(this.opts.mobile){
+                    this.highlightUnderEvent(event);
+                }
+            }));
             
             this.dropdown.on("mouseup", resultsSelector, this.bind(function (e) {
                 if ($(e.target).closest(".select2-result-selectable").length > 0) {
-                    this.highlightUnderEvent(e);
+                    if(!self.opts.mobile){
+                        this.highlightUnderEvent(e);
+                    }
                     this.selectHighlighted(e);
                 }
             }));
