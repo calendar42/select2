@@ -650,7 +650,11 @@ the specific language governing permissions and limitations under the Apache Lic
             this.container.attr("id", this.containerId);
 
             // cache the body so future lookups are cheap
-            this.body = thunk(function() { return opts.element.closest("body"); });
+            if (this.opts.parentContainerSelector) {
+                this.body = function () { return $(this.opts.parentContainerSelector); };
+            } else {
+                this.body = thunk(function() { return opts.element.closest("body"); });
+            }
 
             syncCssClasses(this.container, this.opts.element, this.opts.adaptContainerCssClass);
 
@@ -1331,7 +1335,7 @@ the specific language governing permissions and limitations under the Apache Lic
             this.dropdown.attr("id", "select2-drop");
 
             // show the elements
-            mask.css(_makeMaskCss());
+            mask.css(_makeMaskCss(this.opts));
             mask.show();
             this.dropdown.show();
             
@@ -1347,16 +1351,23 @@ the specific language governing permissions and limitations under the Apache Lic
             var that = this;
             this.container.parents().add(window).each(function () {
                 $(this).on(resize+" "+scroll+" "+orient, function (e) {
-                    $("#select2-drop-mask").css(_makeMaskCss());
+                    $("#select2-drop-mask").css(_makeMaskCss(that.opts));
                     that.positionDropdown();
                 });
             });
 
-            function _makeMaskCss() {
-                return {
-                    width  : Math.max(document.documentElement.scrollWidth,  $(window).width()),
-                    height : Math.max(document.documentElement.scrollHeight, $(window).height())
-                };
+            function _makeMaskCss(opts) {
+                if (opts.noMask) {
+                    return {
+                        width  : 0,
+                        height : 0
+                    };
+                } else {
+                    return {
+                        width  : Math.max(document.documentElement.scrollWidth,  $(window).width()),
+                        height : Math.max(document.documentElement.scrollHeight, $(window).height())
+                    };
+                }
             }
         },
 
@@ -3220,6 +3231,8 @@ the specific language governing permissions and limitations under the Apache Lic
     // plugin defaults, accessible to users
     $.fn.select2.defaults = {
         width: "copy",
+        noMask: false, // If set to true, the dimensions of the mask will be set to 0x0
+        parentContainerSelector: null, // if passed along it will not contain to the body, but to the element related to the selector
         loadMorePadding: 0,
         closeOnSelect: true,
         openOnEnter: true,
