@@ -718,10 +718,18 @@ the specific language governing permissions and limitations under the Apache Lic
             });
             search.on("blur", function () { search.removeClass("select2-focused");});
 
+            this.dropdown.on("touchstart",this.bind(function(event){
+                event.stopImmediatePropagation();
+                if(this.opts.mobile){
+                    this.highlightUnderEvent(event);
+                }
+            }));
             
             this.dropdown.on("mouseup", resultsSelector, this.bind(function (e) {
                 if ($(e.target).closest(".select2-result-selectable").length > 0) {
-                    this.highlightUnderEvent(e);
+                    if(!self.opts.mobile){
+                        this.highlightUnderEvent(e);
+                    }
                     this.selectHighlighted(e);
                 }
             }));
@@ -2687,11 +2695,22 @@ the specific language governing permissions and limitations under the Apache Lic
         // multi
         closing: function () {
             this.parent.closing.apply(this, arguments);
+            if(!this.opts.mobile){
 
-            this.container.removeClass("select2-container-active");
-            this.search.removeClass("select2-focused");
-            this.clearSearch();
-            this.search.blur();
+                // The following is done to completely clear out the focus on the search field when you've clicked outside the select search field
+                // Without the following the select2 wouldn't completely loose focus, leading in the user having to click twice in side the search field to get back the focus
+                this.container.removeClass("select2-container-active");
+                this.search.removeClass("select2-focused");
+                this.clearSearch();
+                // However..
+                // This blur fucks up in the following cases:
+                // - On mobile when closing automatically when query.term = "". (as the .focus() doesn't work on mobile phones)
+                // - It messes up in a multi select when trying to remove the last tag with backspace
+                //          For the same reason more or less. However, there .focus() does work on desktops! Yeah.
+                //  this.search.blur();
+                // The IF solution is a patch because, by now, we can't force to focus to the input again
+                this.search.blur();
+            }
         },
 
         // multi
