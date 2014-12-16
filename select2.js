@@ -739,6 +739,9 @@ the specific language governing permissions and limitations under the Apache Lic
                 e.stopPropagation();
 
                 this.val("");
+
+                this.triggerChange({removed:this.selection.data("select2-data")});
+
                 this.close();
                 this.open();
             }));
