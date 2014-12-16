@@ -739,7 +739,6 @@ the specific language governing permissions and limitations under the Apache Lic
                 e.stopPropagation();
 
                 this.val("");
-
                 this.triggerChange({removed:this.selection.data("select2-data")});
 
                 this.close();
@@ -3179,7 +3178,7 @@ the specific language governing permissions and limitations under the Apache Lic
             opts,
             select2,
             value, multiple,
-            allowedMethods = ["val", "destroy", "opened", "open", "close", "focus", "isFocused", "container", "onSortStart", "onSortEnd", "enable", "readonly", "positionDropdown", "data", "selectCurrent", "updateResults"],
+            allowedMethods = ["val", "destroy", "opened", "open", "close", "focus", "isFocused", "container", "onSortStart", "onSortEnd", "enable", "readonly", "positionDropdown", "data", "selectCurrent", "updateResults", "addSelectedChoice"],
             valueMethods = ["val", "opened", "isFocused", "container", "data"];
 
         this.each(function () {
