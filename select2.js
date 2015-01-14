@@ -1155,6 +1155,8 @@ the specific language governing permissions and limitations under the Apache Lic
             }else{
                 var $clearbutton = this.clearbutton,
                     width = this.container.outerWidth(false),
+                    /* Since the width is calculated we should use that width instead outerWidth of the dropdown */
+                    dropWidth = width,
                     dropHeight = $dropdown.outerHeight(false),
                     dropLeft = offset.left,
                     viewPortRight = $(window).scrollLeft() + $(window).width(),
