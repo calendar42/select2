@@ -1226,16 +1226,19 @@ the specific language governing permissions and limitations under the Apache Lic
                     dropTop = offset.top - dropHeight;
                     this.container.addClass("select2-drop-above");
                     $dropdown.addClass("select2-drop-above");
+                    /* If goes up, it will have the initial (auto) max height */
+                    $resultsList.css('max-height', "initial");
                 }
                 else {
                     this.container.removeClass("select2-drop-above");
                     $dropdown.removeClass("select2-drop-above");
                 }
-                 css = $.extend({
+                css = $.extend({
                     top: dropTop,
                     left: dropLeft,
                     width: width
                 }, evaluate(this.opts.dropdownCss));
+                 
 
                 $dropdown.css(css);
                 var btnMargin = Math.round((height - $clearbutton.outerHeight(false)) / 2);
