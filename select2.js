@@ -1226,8 +1226,12 @@ the specific language governing permissions and limitations under the Apache Lic
                     dropTop = offset.top - dropHeight;
                     this.container.addClass("select2-drop-above");
                     $dropdown.addClass("select2-drop-above");
-                    /* If goes up, it will have the initial (auto) max height */
-                    $resultsList.css('max-height', "initial");
+                    /* 
+                    If goes up, it will have calculate the new max-height based on:
+                        Distance from the input and the top part of the browser
+                        less the margins in the top and in the bottom
+                    */
+                    $resultsList.css('max-height',  offset.top - parseFloat($resultsList.css('margin-top').replace(/[^-\d\.]/g, '')) - parseFloat($resultsList.css('margin-bottom').replace(/[^-\d\.]/g, '')) );
                 }
                 else {
                     this.container.removeClass("select2-drop-above");
