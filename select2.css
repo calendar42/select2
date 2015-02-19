@@ -1,4 +1,4 @@
-﻿/*
+/*
 Version: @@ver@@ Timestamp: @@timestamp@@
 */
 .select2-container {
@@ -9,7 +9,7 @@ Version: @@ver@@ Timestamp: @@timestamp@@
     zoom: 1;
     *display: inline;
     vertical-align: middle;
-    /*width: 361px !important;*/
+    width: 80% !important;
 }
 
 .select2-container,
@@ -41,7 +41,7 @@ Version: @@ver@@ Timestamp: @@timestamp@@
     border-top: none;
     border-left: none;
     border-right: none;
-
+    
     white-space: nowrap;
     line-height: 30px;
     color: #444;
@@ -60,7 +60,9 @@ Version: @@ver@@ Timestamp: @@timestamp@@
        -khtml-user-select: none;
          -moz-user-select: none;
           -ms-user-select: none;
-              user-select: none;
+              
+    width: 100%;
+    user-select: none;
 
     background-color: transparent;
 }
@@ -82,7 +84,7 @@ Version: @@ver@@ Timestamp: @@timestamp@@
 }
 
 .select2-container .select2-choice span {
-    /*margin-right: 26px;*/
+    margin-right: 26px;
     display: block;
     overflow: hidden;
 
@@ -90,7 +92,18 @@ Version: @@ver@@ Timestamp: @@timestamp@@
 
     -ms-text-overflow: ellipsis;
      -o-text-overflow: ellipsis;
-        text-overflow: ellipsis;
+        
+    text-overflow: ellipsis;
+    width: 100%;
+}
+/* don't overflow */
+.show-all-content.select2-container .select2-choice{
+    height: auto;
+    white-space: initial;
+}
+.show-all-content.select2-container .select2-choice span{
+    overflow: auto;
+    white-space: initial;
 }
 
 .select2-container .select2-choice abbr {
