@@ -743,6 +743,8 @@ the specific language governing permissions and limitations under the Apache Lic
                 e.stopPropagation();
 
                 this.val("");
+                this.triggerChange({removed:this.selection.data("select2-data")});
+
                 this.close();
                 this.open();
             }));
@@ -1153,6 +1155,8 @@ the specific language governing permissions and limitations under the Apache Lic
             }else{
                 var $clearbutton = this.clearbutton,
                     width = this.container.outerWidth(false),
+                    /* Since the width is calculated we should use that width instead outerWidth of the dropdown */
+                    dropWidth = width,
                     dropHeight = $dropdown.outerHeight(false),
                     dropLeft = offset.left,
                     viewPortRight = $(window).scrollLeft() + $(window).width(),
@@ -1222,16 +1226,23 @@ the specific language governing permissions and limitations under the Apache Lic
                     dropTop = offset.top - dropHeight;
                     this.container.addClass("select2-drop-above");
                     $dropdown.addClass("select2-drop-above");
+                    /* 
+                    If goes up, it will have calculate the new max-height based on:
+                        Distance from the input and the top part of the browser
+                        less the margins in the top and in the bottom
+                    */
+                    $resultsList.css('max-height',  offset.top - parseFloat($resultsList.css('margin-top').replace(/[^-\d\.]/g, '')) - parseFloat($resultsList.css('margin-bottom').replace(/[^-\d\.]/g, '')) );
                 }
                 else {
                     this.container.removeClass("select2-drop-above");
                     $dropdown.removeClass("select2-drop-above");
                 }
-                 css = $.extend({
+                css = $.extend({
                     top: dropTop,
                     left: dropLeft,
                     width: width
                 }, evaluate(this.opts.dropdownCss));
+                 
 
                 $dropdown.css(css);
                 var btnMargin = Math.round((height - $clearbutton.outerHeight(false)) / 2);
@@ -3187,7 +3198,7 @@ the specific language governing permissions and limitations under the Apache Lic
             opts,
             select2,
             value, multiple,
-            allowedMethods = ["val", "destroy", "opened", "open", "close", "focus", "isFocused", "container", "onSortStart", "onSortEnd", "enable", "readonly", "positionDropdown", "data", "selectCurrent", "updateResults"],
+            allowedMethods = ["val", "destroy", "opened", "open", "close", "focus", "isFocused", "container", "onSortStart", "onSortEnd", "enable", "readonly", "positionDropdown", "data", "selectCurrent", "updateResults", "addSelectedChoice"],
             valueMethods = ["val", "opened", "isFocused", "container", "data"];
 
         this.each(function () {
