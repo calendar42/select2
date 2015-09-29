@@ -456,6 +456,7 @@ disabled look for disabled choices in the results dropdown
     min-height: 26px;
 }
 
+
 .select2-container-multi.select2-container-active .select2-choices {
     border: 1px solid black;
     outline: none;
@@ -502,6 +503,14 @@ input[type="text"].select2-input {
 
 .select2-default {
     color: #999 !important;
+}
+
+.select2-container-multi .select2-choices .select2-search-choice div {
+    max-width: 180px;
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .select2-container-multi .select2-choices .select2-search-choice {
